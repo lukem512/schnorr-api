@@ -181,7 +181,8 @@ bool CCurve::SetVchSecretKey(std::vector<unsigned char> vchSecret)
 
 bool CCurve::GetVchSecretKey(std::vector<unsigned char>& vchSecret)
 {
-	if (!)
+	if (!secretKeySet)
+		return false;
 	vchSecret.resize(SCHNORR_SECRET_KEY_SIZE);
     secretKey.Decode(&vchSecret[0], SCHNORR_SECRET_KEY_SIZE);
     return true;
