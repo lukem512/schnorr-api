@@ -134,7 +134,7 @@ bool CCurve::SetVchPublicKey(std::vector<unsigned char> vchPubKey)
 bool CCurve::GetVchPublicKey(std::vector<unsigned char>& vchPubKey)
 {
 	// set to true for compressed
-	bool fCompressed = true;
+	const bool fCompressed = true;
 	vchPubKey.resize(ec.EncodedPointSize(fCompressed));
     ec.EncodePoint(&vchPubKey[0], Q, fCompressed);
     return true;
@@ -171,11 +171,8 @@ bool CCurve::SetVchSecretKey(std::vector<unsigned char> vchSecret)
 {
 	if (vchSecret.size() != SCHNORR_SECRET_KEY_SIZE)
         return false;
-
-    cout << secretKey.MinEncodedSize() << endl;
-    cout << "Size!" << endl;
-
-    secretKey.Encode(&vchSecret[0], SCHNORR_SECRET_KEY_SIZE);
+    
+    secretKey.Decode(&vchSecret[0], SCHNORR_SECRET_KEY_SIZE);
     return true;
 }
 
@@ -183,7 +180,8 @@ bool CCurve::GetVchSecretKey(std::vector<unsigned char>& vchSecret)
 {
 	if (!secretKeySet)
 		return false;
+
 	vchSecret.resize(SCHNORR_SECRET_KEY_SIZE);
-    secretKey.Decode(&vchSecret[0], SCHNORR_SECRET_KEY_SIZE);
+    secretKey.Encode(&vchSecret[0], SCHNORR_SECRET_KEY_SIZE);
     return true;
 }
