@@ -1,7 +1,6 @@
 #ifndef _Schnorr
 #define _Schnorr
 
-
 #include <string>
 #include <iostream>
 using namespace std;

@@ -1,5 +1,3 @@
-
-//#include "stdafx.h"
 #include "cryptopp/sha3.h"
 #include "Schnorr.h"
 
@@ -46,7 +44,7 @@ Integer CCurve::HashPointMessage(const ECPPoint& R,
 
 	byte digest[digestsize];
 	sha.Final(digest);
-	
+
 	Integer ans;
 	ans.Decode(digest, digestsize);
 	return ans;
@@ -88,7 +86,7 @@ void CCurve::Sign(Integer& sigE, Integer& sigS, const byte* message, int mlen)
 }
 
 bool CCurve::Verify(const Integer& sigE, const Integer& sigS,
-	        const byte* message, int mlen)
+	const byte* message, int mlen)
 {
 	ECPPoint R;
 	R = ec.CascadeScalarMultiply(G, sigS, Q, sigE);
@@ -122,13 +120,13 @@ Integer CCurve::GetSecretKey()
 
 bool CCurve::SetVchPublicKey(std::vector<unsigned char> vchPubKey)
 {
-    ECPPoint publicKey;
+	ECPPoint publicKey;
 
-    if (!ec.DecodePoint (publicKey, &vchPubKey[0], vchPubKey.size()))
-        return false;
+	if (!ec.DecodePoint (publicKey, &vchPubKey[0], vchPubKey.size()))
+	return false;
 
-    Q = publicKey;
-    return true;
+	Q = publicKey;
+	return true;
 }
 
 bool CCurve::GetVchPublicKey(std::vector<unsigned char>& vchPubKey)
@@ -136,52 +134,52 @@ bool CCurve::GetVchPublicKey(std::vector<unsigned char>& vchPubKey)
 	// set to true for compressed
 	const bool fCompressed = true;
 	vchPubKey.resize(ec.EncodedPointSize(fCompressed));
-    ec.EncodePoint(&vchPubKey[0], Q, fCompressed);
-    return true;
+	ec.EncodePoint(&vchPubKey[0], Q, fCompressed);
+	return true;
 }
 
 bool CCurve::GetSignatureFromVch(std::vector<unsigned char> vchSig, Integer& sigE, Integer& sigS)
 {
-    if (vchSig.size() != (SCHNORR_SIG_SIZE * 2))
-        return false;
+	if (vchSig.size() != (SCHNORR_SIG_SIZE * 2))
+	return false;
 
-    // extract bytes
-    std::vector<unsigned char> sigEVec(&vchSig[0], &vchSig[SCHNORR_SIG_SIZE]);
-    std::vector<unsigned char> sigSVec(&vchSig[SCHNORR_SIG_SIZE], &vchSig[1 + SCHNORR_SIG_SIZE * 2]);
+	// extract bytes
+	std::vector<unsigned char> sigEVec(&vchSig[0], &vchSig[SCHNORR_SIG_SIZE]);
+	std::vector<unsigned char> sigSVec(&vchSig[SCHNORR_SIG_SIZE], &vchSig[1 + SCHNORR_SIG_SIZE * 2]);
 
-    // vectors -> Integers
-    sigE.Decode(&sigEVec[0], SCHNORR_SIG_SIZE);
-    sigS.Decode(&sigSVec[0], SCHNORR_SIG_SIZE);
-    return true;
+	// vectors -> Integers
+	sigE.Decode(&sigEVec[0], SCHNORR_SIG_SIZE);
+	sigS.Decode(&sigSVec[0], SCHNORR_SIG_SIZE);
+	return true;
 }
 
 bool CCurve::GetVchFromSignature(std::vector<unsigned char>& vchSig, Integer sigE, Integer sigS)
 {
-    vchSig.resize(SCHNORR_SIG_SIZE * 2);
+	vchSig.resize(SCHNORR_SIG_SIZE * 2);
 
-    if (sigE.MinEncodedSize() > SCHNORR_SIG_SIZE || sigS.MinEncodedSize() > SCHNORR_SIG_SIZE)
-        return false;
+	if (sigE.MinEncodedSize() > SCHNORR_SIG_SIZE || sigS.MinEncodedSize() > SCHNORR_SIG_SIZE)
+	return false;
 
-    sigE.Encode(&vchSig[0], SCHNORR_SIG_SIZE);
-    sigS.Encode(&vchSig[SCHNORR_SIG_SIZE], SCHNORR_SIG_SIZE);
-    return true;
+	sigE.Encode(&vchSig[0], SCHNORR_SIG_SIZE);
+	sigS.Encode(&vchSig[SCHNORR_SIG_SIZE], SCHNORR_SIG_SIZE);
+	return true;
 }
 
 bool CCurve::SetVchSecretKey(std::vector<unsigned char> vchSecret)
 {
 	if (vchSecret.size() != SCHNORR_SECRET_KEY_SIZE)
-        return false;
-    
-    secretKey.Decode(&vchSecret[0], SCHNORR_SECRET_KEY_SIZE);
-    return true;
+	return false;
+
+	secretKey.Decode(&vchSecret[0], SCHNORR_SECRET_KEY_SIZE);
+	return true;
 }
 
 bool CCurve::GetVchSecretKey(std::vector<unsigned char>& vchSecret)
 {
 	if (!secretKeySet)
-		return false;
+	return false;
 
 	vchSecret.resize(SCHNORR_SECRET_KEY_SIZE);
-    secretKey.Encode(&vchSecret[0], SCHNORR_SECRET_KEY_SIZE);
-    return true;
+	secretKey.Encode(&vchSecret[0], SCHNORR_SECRET_KEY_SIZE);
+	return true;
 }
